@@ -246,6 +246,17 @@ function List(){
     }
   };
 
+  this.get = function(suit, value){
+    var node = this.head;
+    while(node != null)
+    {
+      if(node.suit == suit && node.value == value)
+        return node;
+      node = node.next;
+    }
+    return null;
+  };
+
   this.print = function(){
     var node = this.head;
     while(node != null)
