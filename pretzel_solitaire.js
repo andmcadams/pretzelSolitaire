@@ -144,17 +144,18 @@ function clickableGrid( rows, cols, callback ){
 
 function List(){
   List.createNode=function(){
-    return {'suit': null, 'value': null, 'next': null, 'prev': null};
+    return {'suit': null, 'value': null, 'index': null, 'next': null, 'prev': null};
   }
 
   this.head = null;
   this.tail = null;
   this.length = 0;
 
-  this.add = function(suit, value){
+  this.add = function(suit, value, index){
     var node = List.createNode();
     node.suit = suit;
     node.value = value;
+    node.index = index;
     if(this.head == null)
     {
       this.head = node;
