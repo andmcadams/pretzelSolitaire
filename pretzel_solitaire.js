@@ -95,6 +95,11 @@ function shuffleDeck( d ){
 	return d;
 }
 
+// Generate a solvable deck
+function makeSolveable( d, difficulty ){
+  return d;
+}
+
 function clickableGrid( rows, cols, callback ){
     var i=0;
     var grid = document.createElement('table');
