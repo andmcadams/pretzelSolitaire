@@ -141,3 +141,38 @@ function clickableGrid( rows, cols, callback ){
     }
     return grid;
 }
+
+function List(){
+  List.createNode=function(){
+    return {'suit': null, 'value': null, 'next': null, 'prev': null};
+  }
+
+  this.head = null;
+  this.tail = null;
+
+  this.add = function(suit, value){
+    var node = List.createNode();
+    node.suit = suit;
+    node.value = value;
+    if(this.head == null)
+    {
+      this.head = node;
+      this.tail = this.head;
+    }
+    else
+    {
+      this.tail.next = node;
+      node.prev = this.tail;
+      this.tail = node;
+    }
+  }
+
+  this.print = function(){
+    var node = this.head;
+    while(node != null)
+    {
+      console.log(node.value);
+      node = node.next;
+    }
+  }
+}
