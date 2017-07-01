@@ -25,7 +25,9 @@ var values = {
 
 deck = [].concat.apply([], deck);
 deck = shuffleDeck(deck);
-var grid = clickableGrid(4,14,function(el,row,col){
+gridRows = 4;
+gridCols = 14;
+var grid = clickableGrid(gridRows,gridCols,function(el,row,col){
     console.log("You clicked on element:",el);
     console.log("You clicked on row:",row);
     console.log("You clicked on col:",col);
@@ -37,29 +39,31 @@ var grid = clickableGrid(4,14,function(el,row,col){
     //if nothing is clicked
     	//highlight it and set it to lastClicked
     if (lastClicked && lastClicked.getAttribute('index') != el.getAttribute('index') 
-    	&& el.getAttribute('value') != 'blank' && el.getAttribute('value') != 'ace') 
+    	&& el.getAttribute('value') != 'ace') 
   	{
-  		if(el.getAttribute('value') == 'blank' 
-  			&& values[deck[el.getAttribute('index') - 1][1]]+1 == values[deck[lastClicked.getAttribute('index')][1]]
-  			&& deck[el.getAttribute('index') - 1][0] == deck[lastClicked.getAttribute('index')][0])
+  		if(el.getAttribute('value') == 'blank')
   		{
-  			console.log("Value: ", values[deck[el.getAttribute('index') - 1][1]]);
-  			var tempIndex = el.getAttribute('index');
+  			if (( col != 1 && values[deck[el.getAttribute('index') - 1][1]]+1 == values[deck[lastClicked.getAttribute('index')][1]]
+  				&& deck[el.getAttribute('index') - 1][0] == deck[lastClicked.getAttribute('index')][0]) || ( col == 1 && 2 == values[deck[lastClicked.getAttribute('index')][1]]
+  				&& suits[row] == deck[lastClicked.getAttribute('index')][0]))
+  			{
+	  			var tempIndex = el.getAttribute('index');
 
-  			el.innerHTML = lastClicked.innerHTML;
-  			el.setAttribute('value', lastClicked.getAttribute('value'));
-  			el.className='';
+	  			el.innerHTML = lastClicked.innerHTML;
+	  			el.setAttribute('value', lastClicked.getAttribute('value'));
+	  			el.className='';
 
-  			var temp = deck[tempIndex];
-  			deck[tempIndex] = deck[lastClicked.getAttribute('index')];
-  			deck[lastClicked.getAttribute('index')] = temp;
+	  			var temp = deck[tempIndex];
+	  			deck[tempIndex] = deck[lastClicked.getAttribute('index')];
+	  			deck[lastClicked.getAttribute('index')] = temp;
 
-  			lastClicked.innerHTML = '';
-  			lastClicked.setAttribute('value', 'blank');
-	  		lastClicked.className='';
-	  		lastClicked = null;
+	  			lastClicked.innerHTML = '';
+	  			lastClicked.setAttribute('value', 'blank');
+		  		lastClicked.className='';
+		  		lastClicked = null;
+	  		}
   		}
-  		else
+  		else if(el.getAttribute('value') != 'blank')
   		{
   			lastClicked.className = '';
   			el.className='clicked';
