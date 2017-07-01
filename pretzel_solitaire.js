@@ -110,12 +110,26 @@ function initEligibleMovesList( d ){
   return list;
 }
 
+// Given a deck d, find the holes and return an array of their index positions.
+function findHoles( d ){
+  var holes[gridRows];
+  var holeCount = 0;
+  for(var i = 0; i < d.length; i++)
+    if(d[i][1] == 'blank')
+    {
+      holes[holeCount] = i;
+      holeCount++;
+    }
+  return holes;
+}
+
 // Given a solved deck d and difficulty, generate a solveable deck.
 
 function makeSolveable( d, difficulty ){
   var eligibleMoves = initEligibleMovesList(d);
   var madeMoves = List();
   var moveCount = 0;
+  var holes = findHoles(d);
   var randomCard, randomHole;
   var card, oldRightCard, newRightCard;
   while(moveCount < difficulty && eligibleMoves.length != 0)
@@ -136,7 +150,7 @@ function makeSolveable( d, difficulty ){
     // Check to see if the newRightCard is eligible
 
     // Increment moveCount
-    
+
   }
 
 
