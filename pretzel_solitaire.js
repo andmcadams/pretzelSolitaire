@@ -149,6 +149,7 @@ function List(){
 
   this.head = null;
   this.tail = null;
+  this.length = 0;
 
   this.add = function(suit, value){
     var node = List.createNode();
@@ -165,7 +166,29 @@ function List(){
       node.prev = this.tail;
       this.tail = node;
     }
-  }
+
+    this.length++;
+  };
+
+  this.remove = function(suit, value){
+    var node = this.head;
+    while(node != null)
+    {
+      if(node.suit == suit && node.value == value)
+      {
+        var prev = node.prev;
+        var next = node.next;
+        prev.next = next;
+        if(next == null)
+          this.tail = prev;
+        else
+          next.prev = prev;
+
+        this.length--;
+        node = null;
+      }
+    }
+  };
 
   this.print = function(){
     var node = this.head;
@@ -174,5 +197,5 @@ function List(){
       console.log(node.value);
       node = node.next;
     }
-  }
+  };
 }
