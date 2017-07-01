@@ -140,7 +140,7 @@ function makeSolveable( d, difficulty ){
     randomHole = Math.floor(Math.random()*4);
 
     // Set all card variables
-
+    card = eligibleMoves.get(card[randomCard])
     // Switch card and hole in the deck array
 
     // Remove the current card from the list of eligible moves
@@ -246,11 +246,11 @@ function List(){
     }
   };
 
-  this.get = function(suit, value){
+  this.get = function(index){
     var node = this.head;
     while(node != null)
     {
-      if(node.suit == suit && node.value == value)
+      if(node.index == index)
         return node;
       node = node.next;
     }
