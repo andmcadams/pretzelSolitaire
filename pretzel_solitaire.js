@@ -97,8 +97,26 @@ function shuffleDeck( d ){
 	return d;
 }
 
-// Generate a solvable deck
+
+// Given a solved deck d, generate a list of eligible moves.
+function initEligibleMovesList( d ){
+  var list = List();
+  for(var i = 0; i < d.length; i++)
+  {
+    //List.add(suit, value, index)
+    if(d[i][1] != 'blank')
+      list.add(d[i][0], d[i][1], i);
+  }
+  return list;
+}
+
+// Given a solved deck d and difficulty, generate a solveable deck.
+
 function makeSolveable( d, difficulty ){
+  var eligibleMoves = initEligibleMovesList(d);
+  var madeMoves = List();
+
+
   return d;
 }
 
