@@ -115,6 +115,29 @@ function initEligibleMovesList( d ){
 function makeSolveable( d, difficulty ){
   var eligibleMoves = initEligibleMovesList(d);
   var madeMoves = List();
+  var moveCount = 0;
+  var randomCard, randomHole;
+  var card, oldRightCard, newRightCard;
+  while(moveCount < difficulty && eligibleMoves.length != 0)
+  {
+    // Get a random card and a random hole
+
+    randomCard = Math.floor(Math.random()*eligibleMoves.length)
+    randomHole = Math.floor(Math.random()*4);
+
+    // Set all card variables
+
+    // Switch card and hole in the deck array
+
+    // Remove the current card from the list of eligible moves
+
+    // Check to see if the oldRightCard needs to be removed from the list of eligible moves
+
+    // Check to see if the newRightCard is eligible
+
+    // Increment moveCount
+    
+  }
 
 
   return d;
