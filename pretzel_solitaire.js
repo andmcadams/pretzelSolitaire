@@ -3,8 +3,10 @@ var lastClickedVal = '';
 var lastIndex;
 var suits = ["spades", "hearts", "diamonds", "clubs"];
 var cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "blank"];
-var deck = cards.map(function (e, i) {
-    return [[suits[0], e], [suits[1], e], [suits[2], e], [suits[3], e]];
+var deck = suits.map(function (e) {
+    return cards.map(function(el){
+      return [e, el];
+    });
 });
 
 var values = {
