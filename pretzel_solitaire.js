@@ -184,6 +184,7 @@ function makeSolvable( d, difficulty ){
     madeMoves.add(card[0], card[1], cardIndex);
   }
 
+  madeMoves.print();
   return d;
 }
 
@@ -297,7 +298,7 @@ function List(){
     var node = this.head;
     while(node != null)
     {
-      console.log(node.value);
+      console.log(node.suit + ':' + node.value);
       node = node.next;
     }
   };
