@@ -29,7 +29,7 @@ gridRows = 4;
 gridCols = 14;
 
 deck = [].concat.apply([], deck);
-deck = makeSolvable(deck, 10);
+deck = makeSolvable(deck, 100);
 
 var grid = clickableGrid(gridRows,gridCols,function(el,row,col){
     console.log("You clicked on element:",el);
@@ -185,6 +185,7 @@ function makeSolvable( d, difficulty ){
   }
 
   madeMoves.print();
+  console.log('Total Moves: ',moveCount);
   return d;
 }
 
