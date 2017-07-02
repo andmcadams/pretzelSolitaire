@@ -25,10 +25,12 @@ var values = {
 	"king": 13
 }
 
-deck = [].concat.apply([], deck);
-deck = shuffleDeck(deck);
 gridRows = 4;
 gridCols = 14;
+
+deck = [].concat.apply([], deck);
+deck = makeSolvable(deck, 10);
+
 var grid = clickableGrid(gridRows,gridCols,function(el,row,col){
     console.log("You clicked on element:",el);
     console.log("You clicked on row:",row);
@@ -100,7 +102,7 @@ function shuffleDeck( d ){
 
 // Given a solved deck d, generate a list of eligible moves.
 function initEligibleMovesList( d ){
-  var list = List();
+  var list = new List();
   for(var i = 0; i < d.length; i++)
   {
     //List.add(suit, value, index)
@@ -112,7 +114,7 @@ function initEligibleMovesList( d ){
 
 // Given a deck d, find the holes and return an array of their index positions.
 function findHoles( d ){
-  var holes[gridRows];
+  var holes = [];
   var holeCount = 0;
   for(var i = 0; i < d.length; i++)
     if(d[i][1] == 'blank')
@@ -125,34 +127,62 @@ function findHoles( d ){
 
 // Given a solved deck d and difficulty, generate a solveable deck.
 
-function makeSolveable( d, difficulty ){
+function makeSolvable( d, difficulty ){
   var eligibleMoves = initEligibleMovesList(d);
-  var madeMoves = List();
+  var madeMoves = new List();
   var moveCount = 0;
   var holes = findHoles(d);
   var randomCard, randomHole;
+  var cardIndex, holeIndex;
   var card, oldRightCard, newRightCard;
   while(moveCount < difficulty && eligibleMoves.length != 0)
   {
     // Get a random card and a random hole
-
     randomCard = Math.floor(Math.random()*eligibleMoves.length)
     randomHole = Math.floor(Math.random()*4);
 
     // Set all card variables
-    card = eligibleMoves.get(card[randomCard])
+    cardIndex = (eligibleMoves.get(randomCard)).index;
+    holeIndex = holes[randomHole];
+
+    card = deck[cardIndex];
+
+    if(cardIndex % (gridCols-1) != gridCols-2)
+      oldRightCard = deck[cardIndex+1];
+    else
+      oldRightCard = null;
+
+    if(holeIndex % (gridCols-1) != gridCols-2)
+      newRightCard = deck[holeIndex+1];
+    else
+      newRightCard = null;
+
     // Switch card and hole in the deck array
+
+    d[cardIndex] = d[holeIndex];
+    d[holeIndex] = card;
 
     // Remove the current card from the list of eligible moves
 
+    eligibleMoves.remove(card[0], card[1]);
+
     // Check to see if the oldRightCard needs to be removed from the list of eligible moves
+
+    if(oldRightCard)
+      eligibleMoves.remove(oldRightCard[0], oldRightCard[1]);
 
     // Check to see if the newRightCard is eligible
 
-    // Increment moveCount
+    if(newRightCard)
+    {
+      if(values[card[1]] + 1 == values[newRightCard[1]] && card[0] == newRightCard[0])
+        eligibleMoves.add(oldRightCard[0], oldRightCard[1], holeIndex+1);
+    }
 
+    // Increment moveCount and add this move to the list
+    moveCount++;
+    madeMoves.add(card[0], card[1], cardIndex);
   }
-
 
   return d;
 }
@@ -165,7 +195,6 @@ function clickableGrid( rows, cols, callback ){
         var tr = grid.appendChild(document.createElement('tr'));
         for (var c=0;c<cols;++c){
             var cell = tr.appendChild(document.createElement('td'));
-            console.log('Col:', deck);
 						var val = document.createAttribute("value");       // Create a "class" attribute
 						var ind = document.createAttribute("index");       // Create a "class" attribute
             if(c != 0)
@@ -234,7 +263,10 @@ function List(){
       {
         var prev = node.prev;
         var next = node.next;
-        prev.next = next;
+
+        if(prev)
+          prev.next = next;
+
         if(next == null)
           this.tail = prev;
         else
@@ -243,15 +275,19 @@ function List(){
         this.length--;
         node = null;
       }
+      else
+        node = node.next;
     }
   };
 
   this.get = function(index){
     var node = this.head;
+    var i = 0;
     while(node != null)
     {
-      if(node.index == index)
+      if(i == index)
         return node;
+      i++;
       node = node.next;
     }
     return null;
