@@ -3,8 +3,10 @@ var lastClickedVal = '';
 var lastIndex;
 var suits = ["spades", "hearts", "diamonds", "clubs"];
 var cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "blank"];
-var deck = cards.map(function (e, i) {
-    return [[suits[0], e], [suits[1], e], [suits[2], e], [suits[3], e]];
+var deck = suits.map(function (e) {
+    return cards.map(function(el){
+      return [e, el];
+    });
 });
 
 var values = {
@@ -23,10 +25,12 @@ var values = {
 	"king": 13
 }
 
-deck = [].concat.apply([], deck);
-deck = shuffleDeck(deck);
 gridRows = 4;
 gridCols = 14;
+
+deck = [].concat.apply([], deck);
+deck = makeSolvable(deck, 100);
+
 var grid = clickableGrid(gridRows,gridCols,function(el,row,col){
     console.log("You clicked on element:",el);
     console.log("You clicked on row:",row);
@@ -95,6 +99,96 @@ function shuffleDeck( d ){
 	return d;
 }
 
+
+// Given a solved deck d, generate a list of eligible moves.
+function initEligibleMovesList( d ){
+  var list = new List();
+  for(var i = 0; i < d.length; i++)
+  {
+    //List.add(suit, value, index)
+    if(d[i][1] != 'blank')
+      list.add(d[i][0], d[i][1], i);
+  }
+  return list;
+}
+
+// Given a deck d, find the holes and return an array of their index positions.
+function findHoles( d ){
+  var holes = [];
+  var holeCount = 0;
+  for(var i = 0; i < d.length; i++)
+    if(d[i][1] == 'blank')
+    {
+      holes[holeCount] = i;
+      holeCount++;
+    }
+  return holes;
+}
+
+// Given a solved deck d and difficulty, generate a solveable deck.
+
+function makeSolvable( d, difficulty ){
+  var eligibleMoves = initEligibleMovesList(d);
+  var madeMoves = new List();
+  var moveCount = 0;
+  var holes = findHoles(d);
+  var randomCard, randomHole;
+  var cardIndex, holeIndex;
+  var card, oldRightCard, newRightCard;
+  while(moveCount < difficulty && eligibleMoves.length != 0)
+  {
+    // Get a random card and a random hole
+    randomCard = Math.floor(Math.random()*eligibleMoves.length)
+    randomHole = Math.floor(Math.random()*4);
+
+    // Set all card variables
+    cardIndex = (eligibleMoves.get(randomCard)).index;
+    holeIndex = holes[randomHole];
+
+    card = deck[cardIndex];
+
+    if(cardIndex % (gridCols-1) != gridCols-2)
+      oldRightCard = deck[cardIndex+1];
+    else
+      oldRightCard = null;
+
+    if(holeIndex % (gridCols-1) != gridCols-2)
+      newRightCard = deck[holeIndex+1];
+    else
+      newRightCard = null;
+
+    // Switch card and hole in the deck array
+
+    d[cardIndex] = d[holeIndex];
+    d[holeIndex] = card;
+
+    // Remove the current card from the list of eligible moves
+
+    eligibleMoves.remove(card[0], card[1]);
+
+    // Check to see if the oldRightCard needs to be removed from the list of eligible moves
+
+    if(oldRightCard)
+      eligibleMoves.remove(oldRightCard[0], oldRightCard[1]);
+
+    // Check to see if the newRightCard is eligible
+
+    if(newRightCard)
+    {
+      if(values[card[1]] + 1 == values[newRightCard[1]] && card[0] == newRightCard[0])
+        eligibleMoves.add(oldRightCard[0], oldRightCard[1], holeIndex+1);
+    }
+
+    // Increment moveCount and add this move to the list
+    moveCount++;
+    madeMoves.add(card[0], card[1], cardIndex);
+  }
+
+  madeMoves.print();
+  console.log('Total Moves: ',moveCount);
+  return d;
+}
+
 function clickableGrid( rows, cols, callback ){
     var i=0;
     var grid = document.createElement('table');
@@ -103,7 +197,6 @@ function clickableGrid( rows, cols, callback ){
         var tr = grid.appendChild(document.createElement('tr'));
         for (var c=0;c<cols;++c){
             var cell = tr.appendChild(document.createElement('td'));
-            console.log('Col:', deck);
 						var val = document.createAttribute("value");       // Create a "class" attribute
 						var ind = document.createAttribute("index");       // Create a "class" attribute
             if(c != 0)
@@ -133,4 +226,81 @@ function clickableGrid( rows, cols, callback ){
         }
     }
     return grid;
+}
+
+function List(){
+  List.createNode=function(){
+    return {'suit': null, 'value': null, 'index': null, 'next': null, 'prev': null};
+  }
+
+  this.head = null;
+  this.tail = null;
+  this.length = 0;
+
+  this.add = function(suit, value, index){
+    var node = List.createNode();
+    node.suit = suit;
+    node.value = value;
+    node.index = index;
+    if(this.head == null)
+    {
+      this.head = node;
+      this.tail = this.head;
+    }
+    else
+    {
+      this.tail.next = node;
+      node.prev = this.tail;
+      this.tail = node;
+    }
+
+    this.length++;
+  };
+
+  this.remove = function(suit, value){
+    var node = this.head;
+    while(node != null)
+    {
+      if(node.suit == suit && node.value == value)
+      {
+        var prev = node.prev;
+        var next = node.next;
+
+        if(prev)
+          prev.next = next;
+
+        if(next == null)
+          this.tail = prev;
+        else
+          next.prev = prev;
+
+        this.length--;
+        node = null;
+      }
+      else
+        node = node.next;
+    }
+  };
+
+  this.get = function(index){
+    var node = this.head;
+    var i = 0;
+    while(node != null)
+    {
+      if(i == index)
+        return node;
+      i++;
+      node = node.next;
+    }
+    return null;
+  };
+
+  this.print = function(){
+    var node = this.head;
+    while(node != null)
+    {
+      console.log(node.suit + ':' + node.value);
+      node = node.next;
+    }
+  };
 }
